@@ -111,12 +111,20 @@ function isValue(key) {
 }
 
 
-function addTask(task) {
+// function addTask(task) {
+//   if (isValue(task)) {
+//       console.log(WARNINGS.TASK_IN_LIST);
+//   } else {
+//       toDo[task] = STATUSES.TO_DO;
+//   }
+// }
+let addTask = (task) => {
   if (isValue(task)) {
-      console.log(WARNINGS.TASK_IN_LIST);
+      return console.log(WARNINGS.TASK_IN_LIST);
+  
   } else {
-      toDo[task] = STATUSES.TO_DO;
-  }
+      return toDo[task] = STATUSES.TO_DO;
+  }   
 }
 
 
@@ -167,3 +175,4 @@ function showList() {
       }
   }
 }
+const phoneBookCopy = Object.assign({}, phoneBook);
