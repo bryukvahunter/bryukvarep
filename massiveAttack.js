@@ -26,23 +26,51 @@ let massiveToDo = [
     {task: 'Enjoy life', status: STATUSES.IN_PROGRESS, priority: PRIORITIES.HIGH},
 ];
 
+  // let findTaskIndex = massiveToDo.findIndex(taska => taska.task === taskName); Проверка индекса в переменной
 
 function showTasks() {
     massiveToDo.forEach(show => 
-        console.log(`Task - ${show.task}; \n \t 
-            Status - ${show.status}; \n \t 
-            Priority - ${show.priority}`));
+        console.log(
+    `
+    Task - ${show.task}; 
+    Status - ${show.status}; 
+    Priority - ${show.priority}`));
 }
 
 
-function addTask(task, priority, status) {
-    
-     if (status === undefined) {
-        status = STATUSES.TO_DO;
-     }
-    
-     massiveToDo.push({task, priority, status});
-    
+function addTask(task, priority) {
+     massiveToDo.push({task, status: STATUSES.TO_DO, priority});
 }
-addTask('new task', PRIORITIES.LOW);
+
+
+function deleteTask(taskName) {
+    let findTaskIndex = massiveToDo.findIndex(taska => taska.task === taskName);
+    massiveToDo.splice(findTaskIndex, 1);
+}
+
+
+function changeStatus(taskName, statusName) {
+
+    massiveToDo.findIndex(item => {
+        if (item.task === taskName) {
+           return item.status = statusName;
+        }
+    })
+}
+
+
+function changePriority(taskName, priorityName) {
+
+        massiveToDo.findIndex(item => {
+            if (item.task === taskName) {
+               return item.priority = priorityName;
+            }
+        })
+}
+
+
 console.log(massiveToDo);
+changePriority('Plant a tree', PRIORITIES.MEDIUM);
+console.log(massiveToDo);
+
+
