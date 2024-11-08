@@ -8,6 +8,7 @@ const WARNINGS = {
     TASK_IN_LIST: 'The task is already on the list',
     TASK_NOT_FOUND: 'Task not found',
     INCORRECT_STATUS: 'Incorrect status',
+    INCORRECT_PRIORITY: 'Incorrect priority',
 };
 
 const PRIORITIES = {
@@ -26,51 +27,104 @@ let massiveToDo = [
     {task: 'Enjoy life', status: STATUSES.IN_PROGRESS, priority: PRIORITIES.HIGH},
 ];
 
-  // let findTaskIndex = massiveToDo.findIndex(taska => taska.task === taskName); Проверка индекса в переменной
+  
 
 function showTasks() {
     massiveToDo.forEach(show => 
         console.log(
-    `
-    Task - ${show.task}; 
-    Status - ${show.status}; 
-    Priority - ${show.priority}`));
+        `
+        Task - ${show.task}; 
+        Status - ${show.status}; 
+        Priority - ${show.priority}`));
 }
+
 
 
 function addTask(task, priority) {
-     massiveToDo.push({task, status: STATUSES.TO_DO, priority});
+     
+    const findTaskIndex = massiveToDo.find(item => item.task === task);
+        if (findTaskIndex) {
+            console.log(WARNINGS.TASK_IN_LIST);
+            return;
+        }
+
+        if (priority === undefined) {
+            massiveToDo.push({task, status: STATUSES.TO_DO, priority: PRIORITIES.LOW});
+            return
+        }
+
+        massiveToDo.push({task, status: STATUSES.TO_DO, priority});
 }
+
 
 
 function deleteTask(taskName) {
-    let findTaskIndex = massiveToDo.findIndex(taska => taska.task === taskName);
-    massiveToDo.splice(findTaskIndex, 1);
+
+    const findTaskIndex = massiveToDo.findIndex(item => item.task === taskName);
+    
+        if (findTaskIndex === -1) {
+            console.log(WARNINGS.TASK_NOT_FOUND);
+            return;
+        }
+        massiveToDo.splice(findTaskIndex, 1);
 }
 
 
-function changeStatus(taskName, statusName) {
+
+function changeStatus(task, status) {
+
+    const findTaskIndex = massiveToDo.find(item => item.task === task);
+        if (!findTaskIndex) {
+        console.log(WARNINGS.TASK_NOT_FOUND);
+        return;
+        }
+
+    const isCorrectStatus = 
+        status === STATUSES.IN_PROGRESS || 
+        status === STATUSES.TO_DO || 
+        status === STATUSES.DONE;
+
+        if (!isCorrectStatus) {
+            console.log(WARNINGS.INCORRECT_STATUS);
+            return;
+        }
 
     massiveToDo.findIndex(item => {
-        if (item.task === taskName) {
-           return item.status = statusName;
+        if (item.task === task) {
+           return item.status = status;
         }
     })
 }
 
 
-function changePriority(taskName, priorityName) {
 
-        massiveToDo.findIndex(item => {
-            if (item.task === taskName) {
-               return item.priority = priorityName;
-            }
-        })
+function changePriority(task, priority) {
+
+    const findTaskIndex = massiveToDo.find(item => item.task === task);
+        if (!findTaskIndex) {
+        console.log(WARNINGS.TASK_NOT_FOUND);
+        return;
+        }
+
+    const isCorrectPriority = 
+        priority === PRIORITIES.LOW || 
+        priority === PRIORITIES.MEDIUM || 
+        priority === PRIORITIES.HIGH;
+
+        if (!isCorrectPriority) {
+            console.log(WARNINGS.INCORRECT_PRIORITY);
+            return;
+        }
+
+    massiveToDo.findIndex(item => {
+        if (item.task === task) {
+            return item.priority = priority;
+        }
+    })
 }
+changePriority('Enjoy life', PRIORITIES.LOW)
+console.log(massiveToDo);
 
 
-console.log(massiveToDo);
-changePriority('Plant a tree', PRIORITIES.MEDIUM);
-console.log(massiveToDo);
 
 
