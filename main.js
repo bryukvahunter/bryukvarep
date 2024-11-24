@@ -1,49 +1,55 @@
 
-// 1. выводит сообщение, вертикально
-// 2. проверяет первую букву на совпадение с 's'
-// 3. если совпадение с 's' нету, действия? 
-// 4. проверка на количество сисволом в строке
-// 5. если символов больше, выводит только первые, в указанном количестве 
+// const allClearBtn = document.getElementById('allClearButton');
+// const clearBtn = document.getElementById('clearButton');
+
+const firstInput = document.getElementById('calcFirstInput');
+const secondInput = document.getElementById('calcSecondInput');
+// let valFirst = firstInput.value;     // Не работают вне функции
+// let valSecond = secondInput.value; 
+
+const equalBtn = document.getElementById('equalButton');
+const selectOperator = document.getElementById('calcSelect');
+let result = document.getElementById('result');
 
 
-// function checkFirstLetter(letter) {
-//     if (letter[0] === 's' && letter !== Number) { 
-//         letter = letter[0].toUpperCase() + letter.slice(1);
-//         letter = letter.slice(0, 7);
-//      for (key of letter) {
-//             console.log(key);
-//         } 
-//     }
-//     else if (letter[0] !== 's' && letter !== Number) {
-//         letter = letter.slice(0, 7);
-//         for (key of letter) {
-//                 console.log(key);
-//         } 
-//     }   
-//     else {
-//         console.log('Это не строка!');
-//     }
-// }
-// checkFirstLetter('123456789'); // Но выпадает в ошибку, когда ввожу число
 
-function showVerticalString(string) {
+function getResult() {
     
-    if (typeof string != 'string') {
-        console.log('Not string');
-        return;
+    let valFirst = +firstInput.value;
+    let valSecond = +secondInput.value;
+    
+    // if (selectOperator.value === 'subtract') {
+    //     result.innerHTML += valFirst - valSecond;
+    // }
+
+    switch(selectOperator.value) {
+
+        case 'add': 
+        result.innerHTML += valFirst + valSecond;
+        break;
+
+        case 'subtract': 
+        result.innerHTML += valFirst - valSecond;
+        break;
+
+        case 'multi': 
+        result.innerHTML += valFirst * valSecond;
+        break;
+
+        case 'divis': 
+        result.innerHTML += valFirst / valSecond;
+        break;
+
+        default: 
+        alert('Try again');
     }
+    
+}
 
-    for (let i = 0; i < 7; i++) {
-        if (i === 0 && string[i] === 's') {
-            console.log(string[i].toUpperCase());
-            continue;
-        }
+equalBtn.addEventListener('click', getResult);
 
-        if (string[i] === undefined) return;
-        console.log(string[i]);
-    }
-  }
 
-showVerticalString('ssraadadadada');
+
+
 
 

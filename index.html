@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>access to DOM</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="main.js"></script>
 </head>
-<script src="day12.js">
-
-</script>
 <body>
-    
+  <div class="calc">
+    <input id="calcFirstInput" class="calc__input" type="number" />
+    <select id="calcSelect" class="calc__select">
+      <option value="add" selected>+</option>
+      <option value="subtract">-</option>
+      <option value="multi">*</option>
+      <option value="divis">/</option>
+      <option value=""></option>
+    </select>
+    <input id="calcSecondInput" class="calc__input" type="number" />
+    <button id="equalButton" class="calc__btn" type="button">=</button>
+    <output id="result"></output>
+  </div>
 </body>
 </html>
+
+
