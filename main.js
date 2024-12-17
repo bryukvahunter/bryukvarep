@@ -1,55 +1,70 @@
+const getElementById = (id) => {
+    return document.getElementById(id);
+};
 
-// const allClearBtn = document.getElementById('allClearButton');
-// const clearBtn = document.getElementById('clearButton');
-
-const firstInput = document.getElementById('calcFirstInput');
-const secondInput = document.getElementById('calcSecondInput');
-// let valFirst = firstInput.value;     // Не работают вне функции
-// let valSecond = secondInput.value; 
-
-const equalBtn = document.getElementById('equalButton');
-const selectOperator = document.getElementById('calcSelect');
-let result = document.getElementById('result');
-
+const ID = {
+    FIRST_INPUT: getElementById('input1'),
+    SECOND_INPUT: getElementById('input2'),
+    EQUAL_BTN: getElementById('equalBaton'),
+    SELECT_OPERATOR: getElementById('select'),
+    RESULT: getElementById('result'),
+};
 
 
 function getResult() {
     
-    let valFirst = +firstInput.value;
-    let valSecond = +secondInput.value;
+    let firstValue = Number(ID.FIRST_INPUT.value);
+    let secondValue = Number(ID.SECOND_INPUT.value);
     
-    // if (selectOperator.value === 'subtract') {
-    //     result.innerHTML += valFirst - valSecond;
-    // }
+    ID.RESULT.innerHTML = '';
 
-    switch(selectOperator.value) {
+    switch(ID.SELECT_OPERATOR.value) {
 
         case 'add': 
-        result.innerHTML += valFirst + valSecond;
-        break;
+            ID.RESULT.innerHTML = firstValue + secondValue;
+            break;
 
         case 'subtract': 
-        result.innerHTML += valFirst - valSecond;
-        break;
+            ID.RESULT.innerHTML = firstValue - secondValue;
+            break;
 
         case 'multi': 
-        result.innerHTML += valFirst * valSecond;
-        break;
+            ID.RESULT.innerHTML = firstValue * secondValue;
+            break;
 
         case 'divis': 
-        result.innerHTML += valFirst / valSecond;
-        break;
+            switch(firstValue) {
+                case 0:
+                    alert('На ноль делить нельзя');
+                    break;
+            }
+            ID.RESULT.innerHTML = firstValue / secondValue;
+            break;
 
         default: 
-        alert('Try again');
+            alert('Try again');
     }
     
+};
+
+ID.EQUAL_BTN.addEventListener('click', getResult);
+
+
+// 1. Создать функцию, которая создает новый div при нажатии на "=" и записывает туда результат
+// 2. Создать функцию, которая удаляет записанный результат(удаляет div из разметки) если на него кликнуть
+
+
+const body = document.querySelector('body');
+
+function saveRes() {
+    body.insertAdjacentHTML('beforeend', `<div>${ID.RESULT.innerHTML}</div>`);
 }
 
-equalBtn.addEventListener('click', getResult);
+ID.EQUAL_BTN.addEventListener('click', saveRes);
 
 
+function deleteSaved(res) {
+    body.removeChild(res.target);
+}
 
-
-
-
+body.addEventListener('click', deleteSaved);
