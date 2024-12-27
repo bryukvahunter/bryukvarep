@@ -1,34 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NE UNIVAEM</title>
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="calcModif.js"></script>
-</head>
-<body>
-  <!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NE UNIVAEM</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto&display=swap');
+      </style>
     <script defer src="main.js"></script>
   </head>
   <body>
-    <div class="calc">
-      <input id="input1" class="calc__input" type="number" />
-      <select id="select" class="calc__select">
-        <option value="add" selected>+</option>
-        <option value="subtract">-</option>
-        <option value="multi">*</option>
-        <option value="divis">/</option>
-      </select>
-      <input id="input2" class="calc__input" type="number" />
-      <button id="equalBaton" class="calc__btn" type="button">=</button>
-      <output id="result"></output>
+    <div class="container">
+      <div class="todo-section-high">
+        <h1 class="title-priority font-size">
+          HIGH
+        </h1>
+        <form id="add-form-high" class="forma">
+          <input id="input-high" class="new-task-input font-size" name="taskName" type="text" placeholder="Добавить важных дел" required>
+          <button id="btn" type="submit" class="baton-add font-size" data-color="green"></button>
+        </form> 
+        <ul id="ul-block-high"> 
+        </ul>
+      </div>
+      <div class="todo-section-low">
+        <h1 class="title-priority font-size">
+          LOW
+        </h1>
+        <form id="add-form-low" class="forma">
+          <label>
+          <input id="input-low" class="new-task-input font-size" name="taskName" type="text" placeholder="Добавить важных дел" required>
+          </label>
+          <button type="submit" class="baton-add font-size"></button>
+        </form>
+        <ul id="ul-block-low">
+        </ul>
+      </div>
     </div>
-</body>
+  </body>
 </html>
+
