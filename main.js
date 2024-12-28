@@ -84,7 +84,8 @@ function createElement(text, status, id) {
     }
 
     newBlockButton.addEventListener('click', function deleteTask () {
-        const idTask = newBlockLi.querySelector('.task-name').id;
+        const idTask = Number(newBlockLi.querySelector('.task-name').id);
+        
         console.log(idTask);
         // const idTask = newBlockLi.querySelector('.task-name').textContent;
         
