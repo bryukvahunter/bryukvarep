@@ -19,6 +19,7 @@ const PRIORITIES = {
 };
 
 
+let id = 0;
 
 taskFormHigh.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -27,8 +28,10 @@ taskFormHigh.addEventListener('submit', (e) => {
         taskName: input,
         taskPriority: PRIORITIES.HIGH,
         taskStatus: STATUSES.TO_DO,
+        taskID: id,
     };
     storage.push(newTask);
+    id++;
     console.log(storage);
     clean();
     render();
@@ -43,8 +46,10 @@ taskFormLow.addEventListener('submit', (e) => {
         taskName: input,
         taskPriority: PRIORITIES.LOW,
         taskStatus: STATUSES.TO_DO,
+        taskID: id,
     };
     storage.push(newTask);
+    id++;   
     console.log(storage);
     clean();
     render();
@@ -53,7 +58,7 @@ taskFormLow.addEventListener('submit', (e) => {
 })
 
 
-function createElement(text, taskStatus) {
+function createElement(text, status, id) {
     const newBlockLi = document.createElement('li');
     const newBlockInput = document.createElement('input');
     const newBlockP = document.createElement('p');
@@ -71,16 +76,21 @@ function createElement(text, taskStatus) {
     newBlockLi.appendChild(newBlockButton);
 
     newBlockP.textContent = text;
+    newBlockP.id = id;
+    // console.log(id);
 
-    if (taskStatus === STATUSES.DONE) {
+    if (status === STATUSES.DONE) {
         newBlockInput.checked = 'checked';   
     }
 
     newBlockButton.addEventListener('click', function deleteTask () {
-        const taskText = newBlockLi.querySelector('.task-name').textContent;
-        const findIndex = storage.findIndex(index => {
-            return index.taskName === taskText;
-        });
+        const idTask = newBlockLi.querySelector('.task-name').id;
+        console.log(idTask);
+        // const idTask = newBlockLi.querySelector('.task-name').textContent;
+        
+        // const taskText = storage.newTask.taskID;
+        const findIndex = storage.findIndex(index => index.taskID === idTask);
+        console.log(findIndex);
         storage.splice(findIndex, 1);
         clean();
         render();
@@ -101,11 +111,11 @@ function createElement(text, taskStatus) {
 function render() {
     storage.forEach(item => {
         if(item.taskPriority === 'High') {
-            commonBlockHigh.appendChild(createElement(item.taskName, item.taskStatus));
+            commonBlockHigh.appendChild(createElement(item.taskName, item.TaskStatus, item.taskID));
             return;
         }
         if(item.taskPriority === 'Low') {
-            commonBlockLow.appendChild(createElement(item.taskName, item.taskStatus));
+            commonBlockLow.appendChild(createElement(item.taskName, item.taskStatus, item.taskID));
             return;
         }
     })
