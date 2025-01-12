@@ -1,190 +1,284 @@
-
-const taskFormHigh = document.querySelector('#add-form-high');
-const taskFormLow = document.querySelector('#add-form-low');
-const inputHigh = document.querySelector('#input-high');
-const inputLow = document.querySelector('#input-low');
-const buttonAdd = document.querySelector('#btn');
-const commonBlockHigh = document.querySelector('#ul-block-high');
-const commonBlockLow = document.querySelector('#ul-block-low');
-
-const storage = [];
+const findForm = document.querySelector('#block-form'); 
+const inputName = document.querySelector('#input-name');
+const weatherBlock = document.querySelector('#block-city-info');
+const underFormBlock = document.querySelector('#block-under-form');
+const tempValue = document.querySelector('#temperature').textContent;
+const addCityBlock = document.querySelector('#add-city');
+const checkboxInput = document.querySelector('.check-input');
+const checkboxSpan = document.querySelector('.check-box');
+const nameCityBlock = document.querySelector('#city-name');
 
 const STATUSES = {
-    TO_DO: 'To do',
-    DONE: 'Done',
-};
-const PRIORITIES = {
-    HIGH: 'High',
-    LOW: 'Low',
+    ADDED: 'Added',
+    NOT_ADDED: 'Not added',
 };
 
+const WARNINGS = { // так и не понял, куда их вставить
+    ADDED: 'City alrady added',
+    NO_CITY: 'There is no such city',
+}
 
-let id = 0;
+const cities = [];
 
-taskFormHigh.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let input = inputHigh.value;
-    const newTask = {
-        taskName: input,
-        taskPriority: PRIORITIES.HIGH,
-        taskStatus: STATUSES.TO_DO,
-        taskID: id,
-    };
-    storage.push(newTask);
-    id++;
-    console.log(storage);
-    clean();
-    render();
+
+    // try {}
+    // catch(error) {} // обернуть все в try-catch когда-нибудь
+function findCity(event) {
+    event.preventDefault();
     
-    e.target.reset();
-})
+    const inputValue = inputName.value;
+    getWeather(`${inputValue}`);   
 
-taskFormLow.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let input = inputLow.value;
-    const newTask = {
-        taskName: input,
-        taskPriority: PRIORITIES.LOW,
-        taskStatus: STATUSES.TO_DO,
-        taskID: id,
-    };
-    storage.push(newTask);
-    id++;   
-    console.log(storage);
-    clean();
-    render();
+
+    event.target.reset();
+}
+findForm.addEventListener('submit', findCity);
+
+
+function getWeather(name) {
+    const serverUrl = 'http://api.openweathermap.org/data/2.5/weather';
+    const cityName = name;
+    const apiKey = 'f660a2fb1e4bad108d6160b7f58c555f';
+    const url = `${serverUrl}?q=${cityName}&appid=${apiKey}&units=metric`;
     
-    e.target.reset();
-})
+    fetch(url)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('wtf error')
+        } 
+        return response.json();
+    })
+    .then(data => {
+         const tempVal = data.main.temp;
+         const integerTempVal = Math.round(tempVal);
+         const cityName = data.name;
+         const icon = data.weather[0].icon;
+         console.log(data);
+         document.getElementById('temperature').textContent = integerTempVal;
+         document.getElementById('city-name').textContent = cityName;
+         document.querySelector('#pic').src = `https://openweathermap.org/img/wn/${icon}@4x.png`
+    })
+    .then(() =>{
+        const checkName = cities.find(item => {
+            return item.name === nameCityBlock.textContent;
+        });
+        console.log(nameCityBlock.innerText);
+        console.log(checkName);
+        if (checkName) {
+            checkboxInput.checked = true;
+            return;
+        } 
+        checkboxInput.checked = false;
+    })
+    .catch (error => {
+        console.error(error);
+    })
+}
 
 
-function createElement(text, status, id) {
-    const newBlockLi = document.createElement('li');
-    const newBlockInput = document.createElement('input');
-    const newBlockP = document.createElement('p');
-    const newBlockButton = document.createElement('button');
-    
-    newBlockInput.type = 'checkbox';
-    newBlockInput.classList.add('checkbox');
-    newBlockP.classList.add('task-name', 'font-size');
-    newBlockButton.classList.add('baton-close');
-    newBlockButton.setAttribute('id', 'btn-close');
-    newBlockLi.setAttribute('id', 'taska');
-    
-    newBlockLi.appendChild(newBlockInput);
-    newBlockLi.appendChild(newBlockP);
-    newBlockLi.appendChild(newBlockButton);
 
-    newBlockP.textContent = text;
-    newBlockP.id = id;
-    // console.log(id);
+checkboxInput.addEventListener('change', function addCity() {
+    if (this.checked) {
 
-    if (status === STATUSES.DONE) {
-        newBlockInput.checked = 'checked';   
-    }
+        const addedCities = {
+            name: nameCityBlock.textContent,
+            status: STATUSES.ADDED,
+        };
 
-    newBlockButton.addEventListener('click', function deleteTask () {
-        const idTask = Number(newBlockLi.querySelector('.task-name').id);
-        
-        console.log(idTask);
-        // const idTask = newBlockLi.querySelector('.task-name').textContent;
-        
-        // const taskText = storage.newTask.taskID;
-        const findIndex = storage.findIndex(index => index.taskID === idTask);
-        console.log(findIndex);
-        storage.splice(findIndex, 1);
+        cities.push(addedCities);
         clean();
         render();
-    });
-
-    newBlockInput.addEventListener('change', function doTask () {
-        const taskText = newBlockLi.querySelector('.task-name').textContent;
-        const findIndex = storage.findIndex(index => {
-            return index.taskName === taskText;
+    } else {
+        const findIndex = cities.findIndex(index => {
+        return index.name === nameCityBlock.textContent;
         });
-        this.checked ? storage[findIndex].taskStatus = STATUSES.DONE : storage[findIndex].taskStatus = STATUSES.TO_DO;
-        console.log(storage);
-    })
+        this.checked ? cities[findIndex].status = STATUSES.ADDED : cities[findIndex].status = STATUSES.NOT_ADDED;
+        clean();
+        render();
+        cities.splice(findIndex, 1);
+    }
+    console.log(cities);
+})
 
-    return newBlockLi;
+
+
+function createElement(text) {
+    const city = document.createElement('li');
+    city.classList.add('city');
+    city.textContent = text;
+
+    return city; 
 }
 
+
+
 function render() {
-    storage.forEach(item => {
-        if(item.taskPriority === 'High') {
-            commonBlockHigh.appendChild(createElement(item.taskName, item.TaskStatus, item.taskID));
-            return;
-        }
-        if(item.taskPriority === 'Low') {
-            commonBlockLow.appendChild(createElement(item.taskName, item.taskStatus, item.taskID));
-            return;
-        }
+    cities.forEach(item => {
+        if (item.status === STATUSES.ADDED) {
+            addCityBlock.appendChild(createElement(item.name));
+        } 
     })
-    
-};
+}
+
+
 
 function clean() {
-    let allTask = document.querySelectorAll('#taska');
-    for(let i = 0; i < allTask.length; i++) {
-        allTask[i].remove();
+    let allCities = document.querySelectorAll('.city');
+    for(let i = 0; i < allCities.length; i++) {
+        allCities[i].remove();
     }
 }
 
 
 
+addCityBlock.addEventListener('click', function getCity(event) {
+    const clickName = event.target.innerText;
+    getWeather(`${clickName}`);
+})
 
 
 
 
-// Клонирование блока
-
-// const liBlock = document.querySelector('#task-block');  
-// const ulBlock = document.querySelector('#high-blocks');
-// const cloneBlock = liBlock.cloneNode(true);
-//     ulBlock.appendChild(cloneBlock);
-// // cloneBlock.innerHTML = `${val}`;
-
-
-// Колхоз
-
-            // `<li>
-            //     <lable>
-            //         <input class="checkbox-high" type="checkbox">
-            //     </lable>
-            //         <p class="task-name font-size">${val}</p>
-            //         <button class="baton-close"></button>
-            // </li>`
 
 
 
-// Создание нового элемента
 
-// const addTaskForm = document.getElementById('add-form');
-// const ulBlock = document.querySelector('#high-blocks');
 
-// function createElement(event) {
-//     event.preventDefault();
 
-//     const ulBlock = document.querySelector('#high-blocks');
-//     const newBlockLi = document.createElement('li');
-//     const newBlockLabel = document.createElement('label');
-//     const newBlockInput = document.createElement('input');
-//     const newBlockP = document.createElement('p');
-//     const newBlockButton = document.createElement('button');
+
+
+
+
+
+
+
+
+
+
+    // const checkName = cities.find(item => {
+    //     return item.name === inputValue;
+    // });
     
-//     newBlockInput.type = 'checkbox'
-//     newBlockP.classList.add('task-name');
-//     newBlockButton.classList.add('baton-close');
- 
-//     newBlockLabel.appendChild(newBlockInput);
-//     newBlockLi.appendChild(newBlockLabel);
-//     newBlockLi.appendChild(newBlockP);
-//     newBlockLi.appendChild(newBlockButton);
+    // if (checkName) {
+    //     checkboxInput.checked = true;
+    //     return;
+    // }
 
-//     ulBlock.appendChild(newBlockLi);
 
-//     event.target.reset();
+    // const checkName = cities.find(item => {
+    //     return item.name === nameCityBlock.textContent;
+    // });
+    // console.log(nameCityBlock.innerText);
+    // console.log(checkName);
+    // if (checkName) {
+    //     checkboxInput.checked = true;
+    //     // event.target.reset();
+    //     return;
+    // } 
+
+    // checkboxInput.checked = false; // cделать проверку регистра при вводе названия города
+
+
+
+
+  // const addedCities = {
+    //     name: nameCityBlock.textContent,
+    //     status: STATUSES.ADDED,
+    // };
+
+    // cities.push(addedCities);
+    // clean();
+    // render();
+
+    // const findIndex = cities.findIndex(index => {
+    // return index.name === nameCityBlock.textContent;
+    // });
+
+    // this.checked ? cities[findIndex].status = STATUSES.ADDED : cities[findIndex].status = STATUSES.NOT_ADDED;
+    // console.log(addedCities);
+
+
+
+ // const addedCities = {
+    //     name: nameCityBlock.textContent,
+    //     status: STATUSES.ADDED,
+    // };
+    // cities.push(addedCities);
+
+    // const findIndex = cities.findIndex(index => {
+    //    return index.name === nameCityBlock.textContent;
+    // });
+    // this.checked ? cities[findIndex].status = STATUSES.ADDED : cities[findIndex].status = STATUSES.NOT_ADDED;
+    // console.log(addedCities);
+
+    // if (this.checked) {
+        
+    //     console.log(addedCities);
+    //     cities.push(addedCities);
+    //     // render();
+    //     return;
+    // } if (!this.checked) {
+    //     addedCities.status = STATUSES.NOT_ADDED;
+    //     console.log(addedCities);
+    // }
+
+
+
+
+// if (newFetch.ok) {
+//     let jsonNew = await newFetch.json();
+//     console.log(jsonNew.main.temp);
+// } else {
+//     alert('Error: ' + newFetch.status);
 // }
 
-// addTaskForm.addEventListener('submit', createElement);
-    
+
+
+
+
+// console.log(weatherData);
+// let temerature = weatherData.main.temp;
+// console.log(temerature);
+
+// function createElement() {
+    //     const cityInfoBlock = document.createElement('ul');
+    //     const cityNameBlock = document.createElement('li');
+    //     const labelBlock = document.createElement('label');
+    //     const inputLoveBlock = document.createElement('input');
+    //     const spanLoveBlock = document.createElement('span');
+    //     const tempValueBlock = document.createElement('li');
+//     const numberTempBlock = document.createElement('div');
+//     const picTempBlock = document.createElement('div');
+//     const tempInfoBlock = document.createElement('li');
+//     const feelsLikeBlock = document.createElement('div');
+//     const sunriseBlock = document.createElement('div');
+//     const sunsetBlock = document.createElement('div');
+
+//     cityNameBlock.classList.add('city-name');
+//     labelBlock.classList.add('check');
+//     inputLoveBlock.type = 'checkbox';
+//     inputLoveBlock.classList.add('check-input');
+//     spanLoveBlock.classList.add('check-box');
+//     numberTempBlock.classList.add('temp');
+//     picTempBlock.classList.add('img-block');
+//     tempInfoBlock.classList.add('temp-info');
+//     feelsLikeBlock.classList.add('temper-info-text');
+//     sunriseBlock.classList.add('temper-info-text');
+//     sunsetBlock.classList.add('temper-info-text');
+
+//     labelBlock.appendChild(inputLoveBlock);
+//     labelBlock.appendChild(spanLoveBlock);
+//     tempValueBlock.appendChild(numberTempBlock);
+//     tempValueBlock.appendChild(picTempBlock); // добавить картинку через массив
+//     tempInfoBlock.appendChild(feelsLikeBlock);
+//     tempInfoBlock.appendChild(sunriseBlock);
+//     tempInfoBlock.appendChild(sunsetBlock);
+//     cityInfoBlock.appendChild(cityNameBlock);
+//     cityInfoBlock.appendChild(labelBlock);
+//     cityInfoBlock.appendChild(tempValueBlock);
+//     cityInfoBlock.appendChild(tempInfoBlock);
+
+
+//     return cityInfoBlock;
+
+// }
