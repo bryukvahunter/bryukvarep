@@ -1,3 +1,11 @@
+//  + функция updateInfo 
+//  + проверка на нажатое сердечко
+//  + проверка на нажатый ul block
+//  + добавить деструктуризацию
+// вставить картинку через запрос // absolutely hui znaet kak eto sdelat:)
+
+
+
 const findForm = document.querySelector('#block-form'); 
 const inputName = document.querySelector('#input-name');
 const weatherBlock = document.querySelector('#block-city-info');
@@ -7,31 +15,19 @@ const addCityBlock = document.querySelector('#add-city');
 const checkboxInput = document.querySelector('.check-input');
 const checkboxSpan = document.querySelector('.check-box');
 const nameCityBlock = document.querySelector('#city-name');
+nameCityBlock.textContent = 'Saint Petersburg';
 
-const STATUSES = {
-    ADDED: 'Added',
-    NOT_ADDED: 'Not added',
-};
-
-const WARNINGS = { // так и не понял, куда их вставить
-    ADDED: 'City alrady added',
-    NO_CITY: 'There is no such city',
-}
 
 const cities = [];
 
 
-    // try {}
-    // catch(error) {} // обернуть все в try-catch когда-нибудь
 function findCity(event) {
     event.preventDefault();
-    
     const inputValue = inputName.value;
-    getWeather(`${inputValue}`);   
-
-
+    getWeather(inputValue);   
     event.target.reset();
 }
+
 findForm.addEventListener('submit', findCity);
 
 
@@ -44,31 +40,14 @@ function getWeather(name) {
     fetch(url)
     .then(response => {
         if (!response.ok) {
-            throw new Error('wtf error')
+            throw new Error('wtf error');
         } 
         return response.json();
     })
     .then(data => {
-         const tempVal = data.main.temp;
-         const integerTempVal = Math.round(tempVal);
-         const cityName = data.name;
-         const icon = data.weather[0].icon;
-         console.log(data);
-         document.getElementById('temperature').textContent = integerTempVal;
-         document.getElementById('city-name').textContent = cityName;
-         document.querySelector('#pic').src = `https://openweathermap.org/img/wn/${icon}@4x.png`
-    })
-    .then(() =>{
-        const checkName = cities.find(item => {
-            return item.name === nameCityBlock.textContent;
-        });
-        console.log(nameCityBlock.innerText);
-        console.log(checkName);
-        if (checkName) {
-            checkboxInput.checked = true;
-            return;
-        } 
-        checkboxInput.checked = false;
+        const {main: {temp}, name, weather:[{icon}]} = data;
+        updateInfo(Math.round(temp), name, icon);
+        checkLove();
     })
     .catch (error => {
         console.error(error);
@@ -76,50 +55,55 @@ function getWeather(name) {
 }
 
 
-
-checkboxInput.addEventListener('change', function addCity() {
+function addCity() {
     if (this.checked) {
-
         const addedCities = {
-            name: nameCityBlock.textContent,
-            status: STATUSES.ADDED,
+            name: nameCityBlock.textContent
         };
-
         cities.push(addedCities);
         clean();
         render();
+
     } else {
         const findIndex = cities.findIndex(index => {
         return index.name === nameCityBlock.textContent;
         });
-        this.checked ? cities[findIndex].status = STATUSES.ADDED : cities[findIndex].status = STATUSES.NOT_ADDED;
+        cities.splice(findIndex, 1);
         clean();
         render();
-        cities.splice(findIndex, 1);
     }
-    console.log(cities);
-})
+}
 
+checkboxInput.addEventListener('change', addCity);
 
 
 function createElement(text) {
     const city = document.createElement('li');
     city.classList.add('city');
     city.textContent = text;
-
     return city; 
 }
 
 
+function checkLove() {
+    const findName = cities.find(city => {
+        return city.name === nameCityBlock.textContent; 
+    });
+    
+    if (findName) {
+        checkboxInput.checked = true;
+            return;
+        } 
+    checkboxInput.checked = false;
+}
+
 
 function render() {
     cities.forEach(item => {
-        if (item.status === STATUSES.ADDED) {
             addCityBlock.appendChild(createElement(item.name));
         } 
-    })
+    );
 }
-
 
 
 function clean() {
@@ -130,123 +114,45 @@ function clean() {
 }
 
 
+function getCity(event) {
+    const clickName = event.target;
 
-addCityBlock.addEventListener('click', function getCity(event) {
-    const clickName = event.target.innerText;
-    getWeather(`${clickName}`);
-})
+    if (clickName.tagName != 'LI') {
+        return;
+    } 
+    getWeather(clickName.textContent);
+}
 
-
-
-
-
-
-
+addCityBlock.addEventListener('click', getCity)
 
 
-
-
-
-
-
+function updateInfo(temp, name, pic) {
+    document.getElementById('temperature').textContent = temp;
+    document.getElementById('city-name').textContent = name;
+    document.querySelector('#pic').src = `https://openweathermap.org/img/wn/${pic}@4x.png`
+}
 
 
 
 
 
+// const STATUSES = {
+//     ADDED: 'Added',
+//     NOT_ADDED: 'Not added',
+// };
 
-    // const checkName = cities.find(item => {
-    //     return item.name === inputValue;
-    // });
-    
-    // if (checkName) {
-    //     checkboxInput.checked = true;
-    //     return;
-    // }
-
-
-    // const checkName = cities.find(item => {
-    //     return item.name === nameCityBlock.textContent;
-    // });
-    // console.log(nameCityBlock.innerText);
-    // console.log(checkName);
-    // if (checkName) {
-    //     checkboxInput.checked = true;
-    //     // event.target.reset();
-    //     return;
-    // } 
-
-    // checkboxInput.checked = false; // cделать проверку регистра при вводе названия города
-
-
-
-
-  // const addedCities = {
-    //     name: nameCityBlock.textContent,
-    //     status: STATUSES.ADDED,
-    // };
-
-    // cities.push(addedCities);
-    // clean();
-    // render();
-
-    // const findIndex = cities.findIndex(index => {
-    // return index.name === nameCityBlock.textContent;
-    // });
-
-    // this.checked ? cities[findIndex].status = STATUSES.ADDED : cities[findIndex].status = STATUSES.NOT_ADDED;
-    // console.log(addedCities);
-
-
-
- // const addedCities = {
-    //     name: nameCityBlock.textContent,
-    //     status: STATUSES.ADDED,
-    // };
-    // cities.push(addedCities);
-
-    // const findIndex = cities.findIndex(index => {
-    //    return index.name === nameCityBlock.textContent;
-    // });
-    // this.checked ? cities[findIndex].status = STATUSES.ADDED : cities[findIndex].status = STATUSES.NOT_ADDED;
-    // console.log(addedCities);
-
-    // if (this.checked) {
-        
-    //     console.log(addedCities);
-    //     cities.push(addedCities);
-    //     // render();
-    //     return;
-    // } if (!this.checked) {
-    //     addedCities.status = STATUSES.NOT_ADDED;
-    //     console.log(addedCities);
-    // }
-
-
-
-
-// if (newFetch.ok) {
-//     let jsonNew = await newFetch.json();
-//     console.log(jsonNew.main.temp);
-// } else {
-//     alert('Error: ' + newFetch.status);
+// const WARNINGS = { 
+//     ADDED: 'City alrady added',
+//     NO_CITY: 'There is no such city',
 // }
 
-
-
-
-
-// console.log(weatherData);
-// let temerature = weatherData.main.temp;
-// console.log(temerature);
-
 // function createElement() {
-    //     const cityInfoBlock = document.createElement('ul');
-    //     const cityNameBlock = document.createElement('li');
-    //     const labelBlock = document.createElement('label');
-    //     const inputLoveBlock = document.createElement('input');
-    //     const spanLoveBlock = document.createElement('span');
-    //     const tempValueBlock = document.createElement('li');
+//     const cityInfoBlock = document.createElement('ul');
+//     const cityNameBlock = document.createElement('li');
+//     const labelBlock = document.createElement('label');
+//     const inputLoveBlock = document.createElement('input');
+//     const spanLoveBlock = document.createElement('span');
+//     const tempValueBlock = document.createElement('li');
 //     const numberTempBlock = document.createElement('div');
 //     const picTempBlock = document.createElement('div');
 //     const tempInfoBlock = document.createElement('li');
@@ -269,7 +175,7 @@ addCityBlock.addEventListener('click', function getCity(event) {
 //     labelBlock.appendChild(inputLoveBlock);
 //     labelBlock.appendChild(spanLoveBlock);
 //     tempValueBlock.appendChild(numberTempBlock);
-//     tempValueBlock.appendChild(picTempBlock); // добавить картинку через массив
+//     tempValueBlock.appendChild(picTempBlock); 
 //     tempInfoBlock.appendChild(feelsLikeBlock);
 //     tempInfoBlock.appendChild(sunriseBlock);
 //     tempInfoBlock.appendChild(sunsetBlock);
@@ -278,7 +184,5 @@ addCityBlock.addEventListener('click', function getCity(event) {
 //     cityInfoBlock.appendChild(tempValueBlock);
 //     cityInfoBlock.appendChild(tempInfoBlock);
 
-
 //     return cityInfoBlock;
-
 // }
